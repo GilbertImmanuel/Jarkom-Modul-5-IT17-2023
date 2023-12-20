@@ -407,3 +407,236 @@ echo 'Selamat datang di Web Server - Sein!' > /var/www/html/index.html
 auto eth0
 iface eth0 inet dhcp
 ```
+
+## Soal 1
+
+> Agar topologi yang kalian buat dapat mengakses keluar, kalian diminta untuk mengkonfigurasi Aura menggunakan iptables, tetapi tidak ingin menggunakan MASQUERADE.
+
+### Cara Pengerjaan
+
+Melakukan konfigurasi menggunakan `SNAT --to-source` yang mengarah pada NID dari router yang berhubungan dengan NAT. Berikut konfigurasinya : 
+
+```bash
+ETH0_IP=$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source $ETH0_IP
+```
+
+Penjelasan : 
+
+- Menyimpan alamat IP `eth0` dalam variabel `ETH0_IP`.
+- Mengonfigurasi SNAT pada tabel NAT untuk mengganti alamat sumber paket keluar dengan alamat IP `eth0`.
+
+## Soal 2
+
+> Kalian diminta untuk melakukan drop semua TCP dan UDP kecuali port 8080 pada TCP.
+
+### Cara Pengerjaan
+
+- Revolte
+    
+Menambahkan konfigurasi untuk filtering pada TCP dan UDP dan diizinkannya port 8080.
+    
+```bash
+iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+iptables -A INPUT -p tcp -j DROP
+iptables -A INPUT -p udp -j DROP
+```
+    
+Penjelasan : 
+    
+- Menambahkan aturan ke dalam chain INPUT.
+- Menggunakan protokol TCP (`p tcp`).
+- Menentukan port tujuan 8080 (`-dport 8080`).
+- Jika paket memenuhi kriteria aturan ini, maka akan diterima (`j ACCEPT`).
+- Jika paket tidak menggunakan protokol TCP, maka aturan ini menetapkan tindakan yang diambil, yaitu menolak (DROP) paket (`-j DROP`).
+- Jika paket  menggunakan protokol TCP, maka aturan ini menetapkan tindakan yang diambil, yaitu menolak (DROP) paket (`-j DROP`).
+
+## Soal 3
+
+> Kepala Suku North Area meminta kalian untuk membatasi DHCP dan DNS Server hanya dapat dilakukan ping oleh maksimal 3 device secara bersamaan, selebihnya akan di drop.
+
+### Cara Pengerjaan
+
+- Revolte
+
+```bash
+iptables -I INPUT -p icmp -m connlimit --connlimit-above 3 --connlimit-mask 0 -j DROP
+iptables -I INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+```
+    
+Penjelasan : 
+    
+- `I INPUT`: Menyisipkan aturan baru ke dalam chain INPUT (rantai untuk lalu lintas yang menuju ke sistem).
+- `p icmp`: Menentukan protokol yang digunakan, dalam hal ini ICMP (ping).
+- `m connlimit --connlimit-above 3 --connlimit-mask 0`: Menggunakan modul connlimit untuk membatasi jumlah koneksi. Aturan ini menolak paket ICMP jika jumlah koneksi dari satu sumber melebihi 3.
+- `j DROP`: Menetapkan tindakan yang diambil jika paket memenuhi kriteria aturan, dalam hal ini menolak (DROP) paket.
+- `m state --state ESTABLISHED,RELATED` : Menggunakan modul state untuk menangani koneksi yang telah dibuat (`ESTABLISHED`) atau berkaitan (`RELATED`). Aturan ini memperbolehkan paket yang terkait dengan koneksi yang sudah ada.
+- `j ACCEPT` : Menetapkan tindakan yang diambil jika paket memenuhi kriteria aturan, dalam hal ini menerima (ACCEPT) paket.
+
+## Soal 4
+
+> Lakukan pembatasan sehingga koneksi SSH pada Web Server hanya dapat dilakukan oleh masyarakat yang berada pada GrobeForest.
+
+### Cara Pengerjaan
+
+- Sein & Stark
+    
+```bash
+iptables -A INPUT -p tcp --dport 22 -m iprange --src-range 10.72.8.2-10.72.8.255 -j ACCEPT
+iptables -A INPUT -p tcp --dport 22 -m iprange --src-range 10.72.9.0-10.72.9.255 -j ACCEPT
+iptables -A INPUT -p tcp --dport 22 -m iprange --src-range 10.72.10.0-10.72.10.255 -j ACCEPT
+iptables -A INPUT -p tcp --dport 22 -m iprange --src-range 10.72.11.0-10.72.11.254 -j ACCEPT
+    
+iptables -A INPUT -p tcp --dport 22 -j DROP
+```
+    
+Penjelasan : 
+    
+- Menggunakan modul iprange untuk memeriksa apakah alamat sumber berada dalam rentang 10.72.8.2 hingga 10.72.8.255 (`m iprange --src-range 10.72.8.2-10.72.8.255`).
+- Jika paket memenuhi kriteria aturan, maka akan diterima (`j ACCEPT`).
+- Jika paket tidak memenuhi aturan-aturan sebelumnya, maka aturan ini akan menetapkan tindakan yang diambil, yaitu menolak (DROP) paket (`-j DROP`).
+
+## Soal 5
+
+> Selain itu, akses menuju WebServer hanya diperbolehkan saat jam kerja yaitu Senin-Jumat pada pukul 08.00-16.00.
+
+### Cara Pengerjaan
+
+- Sein & Stark
+    
+```bash
+iptables -A INPUT -m time --timestart 08:00 --timestop 16:00 --weekdays Mon,Tue,Wed,Thu,Fri -j ACCEPT
+iptables -A INPUT -j REJECT
+```
+    
+Penjelasan : 
+    
+- Menambahkan aturan ke dalam chain INPUT.
+- Menggunakan modul time untuk membatasi waktu akses (`m time`).
+- `-timestart 08:00`: Menentukan waktu mulai, dalam hal ini pukul 08:00.
+- `-timestop 16:00`: Menentukan waktu berakhir, dalam hal ini pukul 16:00.
+- `-weekdays Mon,Tue,Wed,Thu,Fri`: Menentukan hari-hari dimana aturan ini berlaku, yaitu Senin hingga Jumat.
+- Jika paket memenuhi kriteria aturan ini pada waktu dan hari yang ditentukan, maka akan diterima (`j ACCEPT`).
+- Jika paket tidak memenuhi aturan waktu di atas, maka aturan ini menetapkan tindakan yang diambil, yaitu menolak (REJECT) paket (`-j REJECT`).
+
+## Soal 6
+
+> Lalu, karena ternyata terdapat beberapa waktu di mana network administrator dari WebServer tidak bisa stand by, sehingga perlu ditambahkan rule bahwa akses pada hari Senin - Kamis pada jam 12.00 - 13.00 dilarang (istirahat maksi cuy) dan akses di hari Jumat pada jam 11.00 - 13.00 juga dilarang (maklum, Jumatan rek).
+
+### Cara Pengerjaan
+
+- Sein & Stark
+    
+```bash
+iptables -A INPUT -m time --timestart 12:00 --timestop 13:00 --weekdays Mon,Tue,Wed,Thu -j REJECT
+iptables -A INPUT -m time --timestart 11:00 --timestop 13:00 --weekdays Fri -j REJECT
+```
+    
+Penjelasan : 
+    
+- Menambahkan aturan ke dalam chain INPUT.
+- Menggunakan modul time untuk membatasi waktu akses (`m time`).
+- `-timestart 12:00` : Menentukan waktu mulai, dalam hal ini pukul 12:00.
+- `-timestop 13:00` : Menentukan waktu berakhir, dalam hal ini pukul 13:00.
+- `-weekdays Mon,Tue,Wed,Thu` : Menentukan hari-hari dimana aturan ini berlaku, yaitu Senin hingga Kamis.
+- `-timestart 11:00` : Menentukan waktu mulai, dalam hal ini pukul 11:00.
+- `-timestop 13:00` : Menentukan waktu berakhir, dalam hal ini pukul 13:00.
+- `-weekdays Fri` : Menentukan hari dimana aturan ini berlaku, yaitu Jumat.
+- Jika paket memenuhi kriteria aturan ini pada waktu dan hari yang ditentukan, maka aturan ini menetapkan tindakan yang diambil, yaitu menolak (REJECT) paket (`j REJECT`).
+
+## Soal 7
+
+> Karena terdapat 2 WebServer, kalian diminta agar setiap client yang mengakses Sein dengan Port 80 akan didistribusikan secara bergantian pada Sein dan Stark secara berurutan dan request dari client yang mengakses Stark dengan port 443 akan didistribusikan secara bergantian pada Sein dan Stark secara berurutan.
+
+### Cara Pengerjaan
+
+- Sein & Stark
+    
+```bash
+while true; do nc -l -p 80 -c 'echo "ini sein"'; done
+while true; do nc -l -p 80 -c 'echo "ini stark"'; done
+while true; do nc -l -p 443 -c 'echo "ini sein"'; done
+while true; do nc -l -p 443 -c 'echo "ini stark"'; done
+```
+    
+- Himmel & Heiter
+    
+```bash
+iptables -A PREROUTING -t nat -p tcp --dport 80 -d 10.72.8.2 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 10.72.8.2
+iptables -A PREROUTING -t nat -p tcp --dport 80 -d 10.72.8.2 -j DNAT --to-destination 10.72.14.138
+iptables -A PREROUTING -t nat -p tcp --dport 443 -d 10.72.14.138 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 10.72.14.138
+iptables -A PREROUTING -t nat -p tcp --dport 443 -d 10.72.14.138 -j DNAT --to-destination 10.72.8.2
+```
+
+## Soal 8
+
+> Karena berbeda koalisi politik, maka subnet dengan masyarakat yang berada pada Revolte dilarang keras mengakses WebServer hingga masa pencoblosan pemilu kepala suku 2024 berakhir. Masa pemilu (hingga pemungutan dan penghitungan suara selesai) kepala suku bersamaan dengan masa pemilu Presiden dan Wakil Presiden Indonesia 2024.
+
+### Cara Pengerjaan
+
+- Sein & Stark
+    
+```bash
+iptables -A INPUT -s 10.72.14.148/30 -m time --datestart 2023-12-10 --datestop 2024-02-15 -j DROP
+```
+    
+Penjelasan : 
+    
+- `A INPUT`: Menambahkan aturan ke dalam chain INPUT (rantai untuk lalu lintas yang menuju ke sistem).
+- `s 10.72.14.148/30`: Menentukan alamat sumber, dalam hal ini rentang alamat IP 10.72.14.148/30 (mengandung empat alamat IP dalam subnet).
+- `m time --datestart 2023-12-10 --datestop 2024-02-15`: Menggunakan modul time untuk membatasi waktu akses. Menentukan tanggal mulai (`-datestart`) pada 10 Desember 2023 dan tanggal berakhir (`-datestop`) pada 15 Februari 2024.
+- `j DROP`: Menetapkan tindakan yang diambil jika paket memenuhi kriteria aturan, dalam hal ini menolak (DROP) paket.
+
+## Soal 9
+
+> Sadar akan adanya potensial saling serang antar kubu politik, maka WebServer harus dapat secara otomatis memblokir  alamat IP yang melakukan scanning port dalam jumlah banyak (maksimal 20 scan port) di dalam selang waktu 10 menit. 
+
+### Cara Pengerjaan
+
+- Sein & Stark
+    
+```bash
+iptables -N portscan
+```
+    
+Penjelasan : 
+    
+- Membuat chain (rantai) baru dengan nama "portscan".
+    
+```bash
+iptables -A INPUT -m recent --name portscan --update --seconds 600 --hitcount 20 -j DROP
+```
+    
+Penjelasan : 
+- Menambahkan aturan ke chain INPUT.
+- Menggunakan modul "recent" untuk mendeteksi serangan port scanning.
+- `-name portscan`: Menentukan nama yang akan digunakan untuk melacak status koneksi (dalam hal ini, "portscan").
+- `-update`: Memperbarui waktu akses terakhir ketika paket yang sesuai diterima.
+- `-seconds 600`: Menentukan interval waktu (600 detik atau 10 menit) dalam interval waktu untuk melacak paket.
+- `-hitcount 20`: Menentukan jumlah paket yang diizinkan dalam interval waktu sebelum aturan selanjutnya diterapkan.
+- `j DROP`: Menetapkan tindakan yang diambil jika paket memenuhi kriteria aturan, dalam hal ini menolak (DROP) paket.
+    
+```bash
+iptables -A FORWARD -m recent --name portscan --update --seconds 600 --hitcount 20 -j DROP
+```
+    
+Penjelasan : 
+    
+- Menambahkan aturan ke chain FORWARD.
+- Menggunakan modul "recent" untuk mendeteksi serangan port scanning dengan parameter yang sama seperti pada aturan sebelumnya.
+    
+```bash
+iptables -A INPUT -m recent --name portscan --set -j ACCEPT
+iptables -A FORWARD -m recent --name portscan --set -j ACCEPT
+```
+    
+Penjelasan : 
+    
+- Menambahkan aturan ke chain INPUT.
+- Menggunakan modul "recent" untuk melacak status koneksi.
+- `-set`: Menandai paket sebagai paket yang memulai serangan (dalam hal ini, menandai paket pertama dari serangan port scanning).
+- `j ACCEPT`: Menetapkan tindakan yang diambil jika paket memenuhi kriteria aturan, dalam hal ini menerima (ACCEPT) paket.
+- Menambahkan aturan ke chain FORWARD.
+- Menggunakan modul "recent" untuk melacak status koneksi dengan parameter yang sama seperti pada aturan sebelumnya.
+
+Paket setelah 20, akan otomatis ter`DROP` dan tidak terikirim.
