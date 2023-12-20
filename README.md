@@ -26,63 +26,62 @@ Berdasarkan subnetting yang telah kami buat, berikut merupakan konfigurasi dan r
 
 - Aura
 
-  ```bash
-      auto eth0
-      iface eth0 inet dhcp
+```bash
+auto eth0
+iface eth0 inet dhcp
       
-      auto eth1
-      iface eth1 inet static
-      	address 10.72.14.129
-      	netmask 255.255.255.252
+auto eth1
+iface eth1 inet static
+      address 10.72.14.129
+      netmask 255.255.255.252
       
-      auto eth2
-      iface eth2 inet static
-      	address 10.72.14.133
-      	netmask 255.255.255.252
+auto eth2
+iface eth2 inet static
+      address 10.72.14.133
+      netmask 255.255.255.252
   
-      route add -net 10.72.0.0 netmask 255.255.248.0 gw 10.72.14.130
-      # A3
-      route add -net 10.72.8.0 netmask 255.255.252.0 gw 10.72.14.130
+route add -net 10.72.0.0 netmask 255.255.248.0 gw 10.72.14.130
+# A3
+route add -net 10.72.8.0 netmask 255.255.252.0 gw 10.72.14.130
       
-      # A5
-      route add -net 10.72.14.136 netmask 255.255.255.252 gw 10.72.14.134
-      # A6
-      route add -net 10.72.14.140 netmask 255.255.255.252 gw 10.72.14.134
-      # A7
-      route add -net 10.72.12.0 netmask 255.255.254.0 gw 10.72.14.134
-      # A8
-      route add -net 10.72.14.0 netmask 255.255.255.128 gw 10.72.14.134
-      # A9
-      route add -net 10.72.14.144 netmask 255.255.255.252 gw 10.72.14.134
-      # A10
-      route add -net 10.72.14.148 netmask 255.255.255.252 gw 10.72.14.134
+# A5
+route add -net 10.72.14.136 netmask 255.255.255.252 gw 10.72.14.134
+# A6
+route add -net 10.72.14.140 netmask 255.255.255.252 gw 10.72.14.134
+# A7
+route add -net 10.72.12.0 netmask 255.255.254.0 gw 10.72.14.134
+# A8
+route add -net 10.72.14.0 netmask 255.255.255.128 gw 10.72.14.134
+# A9
+route add -net 10.72.14.144 netmask 255.255.255.252 gw 10.72.14.134
+# A10
+route add -net 10.72.14.148 netmask 255.255.255.252 gw 10.72.14.134
   ```
 
 - Heiter
 
-  ```bash
-      auto eth0
-      iface eth0 inet static
-      	address 10.72.14.130
-      	netmask 255.255.255.252
-        gateway 10.72.14.129
+```bash
+auto eth0
+iface eth0 inet static
+      address 10.72.14.130
+      netmask 255.255.255.252
+      gateway 10.72.14.129
       
-      auto eth1
-      iface eth1 inet static
-      	address 10.72.0.1
-      	netmask 255.255.248.0
+auto eth1
+iface eth1 inet static
+      address 10.72.0.1
+      netmask 255.255.248.0
       
-      auto eth2
-      iface eth2 inet static
-      	address 10.72.8.1
-      	netmask 255.255.252.0
-      ```
+auto eth2
+iface eth2 inet static
+      address 10.72.8.1
+      netmask 255.255.252.0
   
-      # To Aura
-      route add -net 0.0.0.0 netmask 0.0.0.0 gw 10.72.14.129
-  ```
+# To Aura
+route add -net 0.0.0.0 netmask 0.0.0.0 gw 10.72.14.129
+```
 
-**DHCP Relay →** DHCP Relay diberikan pada router yang berdekatan dengan client, yaitu pada `Heiter` dan `Himmel`
+  **DHCP Relay →** DHCP Relay diberikan pada router yang berdekatan dengan client, yaitu pada `Heiter` dan `Himmel`
 
   ```bash
       echo 'nameserver 192.168.122.1' > /etc/resolv.conf
@@ -104,70 +103,69 @@ Berdasarkan subnetting yang telah kami buat, berikut merupakan konfigurasi dan r
 
 - Frieren
 
-  ```bash
-      auto eth0
-      iface eth0 inet static
-      	address 10.72.14.134
-      	netmask 255.255.255.252
-        gateway 10.72.14.133
+```bash
+auto eth0
+iface eth0 inet static
+      address 10.72.14.134
+      netmask 255.255.255.252
+      gateway 10.72.14.133
       
-      auto eth1
-      iface eth1 inet static
-      	address 10.72.14.137
-      	netmask 255.255.255.252
+auto eth1
+iface eth1 inet static
+      address 10.72.14.137
+      netmask 255.255.255.252
       
-      auto eth2
-      iface eth2 inet static
-      	address 10.72.14.141
-      	netmask 255.255.255.252
+auto eth2
+iface eth2 inet static
+      address 10.72.14.141
+      netmask 255.255.255.252
   
-      # To Aura
-      route add -net 0.0.0.0 netmask 0.0.0.0 gw 10.72.14.133
+# To Aura
+route add -net 0.0.0.0 netmask 0.0.0.0 gw 10.72.14.133
       
-      # A7
-      route add -net 10.72.12.0 netmask 255.255.254.0 gw 10.72.14.142
-      # A8
-      route add -net 10.72.14.0 netmask 255.255.255.128 gw 10.72.14.142
-      # A9
-      route add -net 10.72.14.144 netmask 255.255.255.252 gw 10.72.14.142
-      # A10
-      route add -net 10.72.14.148 netmask 255.255.255.252 gw 10.72.14.142
-  ```
+# A7
+route add -net 10.72.12.0 netmask 255.255.254.0 gw 10.72.14.142
+# A8
+route add -net 10.72.14.0 netmask 255.255.255.128 gw 10.72.14.142
+# A9
+route add -net 10.72.14.144 netmask 255.255.255.252 gw 10.72.14.142
+# A10
+route add -net 10.72.14.148 netmask 255.255.255.252 gw 10.72.14.142
+```
 
 - Himmel
 
-  ```bash
-      auto eth0
-      iface eth0 inet static
-      	address 10.72.14.130
-      	netmask 255.255.255.252
-        gateway 10.72.14.129
+```bash
+auto eth0
+iface eth0 inet static
+      address 10.72.14.130
+      netmask 255.255.255.252
+      gateway 10.72.14.129
       
-      auto eth1
-      iface eth1 inet static
-      	address 10.72.0.1
-      	netmask 255.255.248.0
+auto eth1
+iface eth1 inet static
+      address 10.72.0.1
+      netmask 255.255.248.0
       
-      auto eth2
-      iface eth2 inet static
-      	address 10.72.8.1
-      	netmask 255.255.252.0
-      ```
+auto eth2
+iface eth2 inet static
+      address 10.72.8.1
+      netmask 255.255.252.0
   
-      # To Aura
-      route add -net 0.0.0.0 netmask 0.0.0.0 gw 10.72.14.129
+# To Aura
+route add -net 0.0.0.0 netmask 0.0.0.0 gw 10.72.14.129
 
-      # A7
-      route add -net 10.72.12.0 netmask 255.255.254.0 gw 10.72.14.142
-      # A8
-      route add -net 10.72.14.0 netmask 255.255.255.128 gw 10.72.14.142
-      # A9
-      route add -net 10.72.14.144 netmask 255.255.255.252 gw 10.72.14.142
-      # A10
-      route add -net 10.72.14.148 netmask 255.255.255.252 gw 10.72.14.142
-  ```
+# A7
+route add -net 10.72.12.0 netmask 255.255.254.0 gw 10.72.14.142
+# A8
+route add -net 10.72.14.0 netmask 255.255.255.128 gw 10.72.14.142
+# A9
+route add -net 10.72.14.144 netmask 255.255.255.252 gw 10.72.14.142
+# A10
+route add -net 10.72.14.148 netmask 255.255.255.252 gw 10.72.14.142
+```
 
-**DHCP Relay →** DHCP Relay diberikan pada router yang berdekatan dengan client, yaitu pada `Heiter` dan `Himmel`
+  **DHCP Relay →** DHCP Relay diberikan pada router yang berdekatan dengan client, yaitu pada `Heiter` dan `Himmel`
 
   ```bash
       echo 'nameserver 192.168.122.1' > /etc/resolv.conf
@@ -189,38 +187,38 @@ Berdasarkan subnetting yang telah kami buat, berikut merupakan konfigurasi dan r
 
 - Fern
 
-  ```bash
-      auto eth0
-      iface eth0 inet static
-      	address 10.72.14.2
-      	netmask 255.255.255.128
-        gateway 10.72.14.1
+```bash
+auto eth0
+iface eth0 inet static
+      address 10.72.14.2
+      netmask 255.255.255.128
+      gateway 10.72.14.1
       
-      auto eth1
-      iface eth1 inet static
-      	address 10.72.14.145
-      	netmask 255.255.255.252
+auto eth1
+iface eth1 inet static
+    address 10.72.14.145
+    netmask 255.255.255.252
       
-      auto eth2
-      iface eth2 inet static
-      	address 10.72.14.149
-      	netmask 255.255.255.252
+auto eth2
+iface eth2 inet static
+    address 10.72.14.149
+    netmask 255.255.255.252
       
-      # To Himmel
-      route add -net 0.0.0.0 netmask 0.0.0.0 gw 10.72.14.1
-  ```
+# To Himmel
+route add -net 0.0.0.0 netmask 0.0.0.0 gw 10.72.14.1
+```
 
 - Revolte
 
-  ```bash
-      auto eth0
-      iface eth0 inet static
-      	address 10.72.14.150
-      	netmask 255.255.255.252
-        gateway 10.72.14.149
-  ```
+```bash
+auto eth0
+iface eth0 inet static
+      address 10.72.14.150
+      netmask 255.255.255.252
+      gateway 10.72.14.149
+```
 
-Revolte juga berperan menjadi `DHCP Server`, dengan tambahan konfigurasi sebagai berikut :
+  Revolte juga berperan menjadi `DHCP Server`, dengan tambahan konfigurasi sebagai berikut :
 
   ```bash
       echo '
@@ -288,15 +286,15 @@ Revolte juga berperan menjadi `DHCP Server`, dengan tambahan konfigurasi sebagai
 
 - Richter
 
-  ```bash
-      auto eth0
-      iface eth0 inet static
-      	address 10.72.14.146
-      	netmask 255.255.255.252
-        gateway 10.72.14.145
-  ```
+```bash
+auto eth0
+iface eth0 inet static
+      address 10.72.14.146
+      netmask 255.255.255.252
+      gateway 10.72.14.145
+```
 
-Ritcher juga berperan menjadi `DNS Server`, dengan tambahan konfigurasi sebagai berikut :
+  Ritcher juga berperan menjadi `DNS Server`, dengan tambahan konfigurasi sebagai berikut :
 
   ```bash
       echo 'nameserver 192.168.122.1' >/etc/resolv.conf
@@ -317,15 +315,15 @@ Ritcher juga berperan menjadi `DNS Server`, dengan tambahan konfigurasi sebagai 
 
 - Stark
 
-  ```bash
-      auto eth0
-      iface eth0 inet static
-      	address 10.72.14.138
-      	netmask 255.255.255.252
-        gateway 10.72.14.137
-  ```
+```bash
+auto eth0
+iface eth0 inet static
+      address 10.72.14.138
+      netmask 255.255.255.252
+      gateway 10.72.14.137
+```
 
-Stark juga berperan menjadi `Web Server`, dengan tambahan konfigurasi sebagai berikut : 
+  Stark juga berperan menjadi `Web Server`, dengan tambahan konfigurasi sebagai berikut : 
 
   ```bash
       echo 'nameserver 192.168.122.1' > /etc/resolv.conf
@@ -353,7 +351,7 @@ Stark juga berperan menjadi `Web Server`, dengan tambahan konfigurasi sebagai be
       # vim: syntax=apache ts=4 sw=4 sts=4 sr noet' > /etc/apache2/ports.conf
   ```
 
-Lalu pada `/var/www/html/index.html` ditambahkan berikut : 
+  Lalu pada `/var/www/html/index.html` ditambahkan berikut : 
 
   ```bash
   echo 'Selamat datang di Web Server - Stark!' > /var/www/html/index.html
@@ -361,15 +359,15 @@ Lalu pada `/var/www/html/index.html` ditambahkan berikut :
 
 - Sein
 
-  ```bash
-      auto eth0
-      iface eth0 inet static
-      	address 10.72.8.2
-      	netmask 255.255.252.0
-        gateway 10.72.8.1
-  ```
+```bash
+auto eth0
+iface eth0 inet static
+      address 10.72.8.2
+      netmask 255.255.252.0
+      gateway 10.72.8.1
+```
 
-Sein juga berperan menjadi `Web Server`, dengan tambahan konfigurasi sebagai berikut :
+  Sein juga berperan menjadi `Web Server`, dengan tambahan konfigurasi sebagai berikut :
 
   ```bash
       echo 'nameserver 192.168.122.1' > /etc/resolv.conf
@@ -397,7 +395,7 @@ Sein juga berperan menjadi `Web Server`, dengan tambahan konfigurasi sebagai ber
       # vim: syntax=apache ts=4 sw=4 sts=4 sr noet' > /etc/apache2/ports.conf
   ```
 
-Lalu pada `/var/www/html/index.html` ditambahkan berikut : 
+  Lalu pada `/var/www/html/index.html` ditambahkan berikut : 
 
   ```bash
   echo 'Selamat datang di Web Server - Sein!' > /var/www/html/index.html
@@ -405,7 +403,7 @@ Lalu pada `/var/www/html/index.html` ditambahkan berikut :
 
 - Client
 
-  ```bash
-  auto eth0
-  iface eth0 inet dhcp
-  ```
+```bash
+auto eth0
+iface eth0 inet dhcp
+```
